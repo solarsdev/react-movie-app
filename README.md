@@ -4,6 +4,7 @@
 
 1. [Introduction](#Introduction)
 2. [React Basics](#React-Basics)
+3. [React State](#React-State)
 
 ## Introduction
 
@@ -153,3 +154,110 @@
 
   - 대문자로 컴포넌트를 정하는 이유에 대해서
     - JSX에서는 HTML 태그를 그대로 이용하는 방식을 사용하고 있기 때문에, 컴포넌트명을 대문자 시작으로 하지 않게 되면 HTML 태그의 정의어와 충돌할 수 있기 때문
+
+## [React State](https://github.com/solarsdev/react-movie-app/tree/master/react-state)
+
+- React에서 State란 컴포넌트가 가지고 있는 상태를 의미하며, 객체로 관리되고 컴포넌트 내에서만 정의되고 사용 가능함
+- Basics에서 구성해보았던 [counter]와 같은 변수들이 바로 State로 정의할수 있는 부분
+
+### State의 구현
+
+- State를 구현하기에 앞서, 먼저 React에서 어떤 방식으로 컴포넌트가 리프레쉬 되는지 파악해야함
+  - 기본 코드 (버튼을 눌러서 클릭수를 증가시키는 어플리케이션)
+    ```jsx
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>React State</title>
+      </head>
+      <body>
+        <div id="root"></div>
+      </body>
+      <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+      <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+      <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      <script type="text/babel">
+        const Root = document.getElementById('root');
+        let counter = 0;
+        const handleClick = () => {
+          counter++;
+          render();
+        };
+        const render = () => {
+          ReactDOM.render(<App />, Root);
+        };
+        const App = () => (
+          <div>
+            <h3>Total Clicks: {counter}</h3>
+            <button onClick={handleClick}>Click Me</button>
+          </div>
+        );
+        render();
+      </script>
+    </html>
+    ```
+- React에서 웹페이지 요소를 업데이트 할때 사용하는 특별한 함수가 있음
+
+  ```jsx
+  RenderDOM.render(<Container />, Root);
+  ```
+
+    <aside>
+    💡 render함수는 특정 컴포넌트를 화면에 다시 그리는 역할을 하는데, 상기 코드에서는 카운터값을 증가시킬때마다 렌더링을 새로 해주고 있음. 렌더링을 할때는 모든 페이지가 아니라 바뀐 부분만 업데이트가 되므로 이 부분은 매우 효율적이라고 판단됨. 다만 특정 값을 업데이트 할때마다 render를 호출하는게 과연 어떨지? 이 부분에 대한 고민이 필요
+    
+    </aside>
+
+- 특정값을 업데이트 할때마다 자동으로 리렌더링을 하는 방법 (State를 이용)
+
+  ```jsx
+  const data = React.useState();
+  // => [undefined, function]
+  // useState의 초기값과 더불어 초기값에 접근할수 있는 함수를 가지게 됨
+
+  // array destructuring을 이용해서 초기값, 함수에 변수명명이 가능
+  const [counter, modifier] = React.useState(0);
+
+  // modifier에 값을 주면 초기값을 갱신한다
+  modifier(10); // counter = 10
+  // +게다가 관련 컴포넌트의 리렌더링도 자동으로 진행됨 👍
+  ```
+
+- 리렌더링을 한다고 하더라도 최종적으로는 변경될 부분만 렌더링을 새로 고치기 때문에 효율성은 유지됨
+  - 최종 코드
+    ```jsx
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>React State</title>
+      </head>
+      <body>
+        <div id="root"></div>
+      </body>
+      <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+      <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+      <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      <script type="text/babel">
+        const [counter, setCounter] = React.setState(0);
+        const handleClick = () => {
+          setCounter(++counter);
+        };
+        const App = () => (
+          <div>
+            <h3>Total Clicks: {counter}</h3>
+            <button onClick={handleClick}>Click Me</button>
+          </div>
+        );
+        const Root = document.getElementById('root');
+        ReactDOM.render(<App />, Root);
+      </script>
+    </html>
+    ```
+    <aside>
+      💡 React 본연의 기능을 활용하면서 이제 좀 코드가 가벼워진 느낌
+    </aside>
