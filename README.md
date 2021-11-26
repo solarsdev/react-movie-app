@@ -100,7 +100,7 @@
         💡 그럼 counter같은 변수를 표현하기 위해서는 항상 컴포넌트를 매번 새로 정의해서 새롭게 렌더링을 해줘야 할까? 이건 React에서 분명 편의제공을 해주는 부분이 있어보임
       </aside>
 
-### JSX
+### JSX란?
 
 - JSX란 JavaScript를 확장한 문법을 말함
 - JavaScript문법으로 엘리먼트를 작성할때 HTML태그를 그대로 사용 가능함
@@ -154,6 +154,24 @@
 
   - 대문자로 컴포넌트를 정하는 이유에 대해서
     - JSX에서는 HTML 태그를 그대로 이용하는 방식을 사용하고 있기 때문에, 컴포넌트명을 대문자 시작으로 하지 않게 되면 HTML 태그의 정의어와 충돌할 수 있기 때문
+
+### JSX로 코딩할때 주의점
+
+- JSX에서는 HTML태그를 그대로 사용할수 있지만, 기본적으로는 JavaScript 규약이므로 주의해야 할 점들이 있음
+- 프로그래밍 언어에서는 예약된 구문들이 존재하는데, JavaScript에서 for나 class같은 것들임
+- 이는 HTML에서 어떤 역할을 동시에 수행하는데, 예를들어 다음의 코드를 확인해보자
+  - 일반적인 HTML 태그로 작성된 코드
+  ```jsx
+  <label for='idHere'></label>
+  <input id='idHere' class='classNameHere' type='text' />
+  ```
+  - JSX에서는 이렇게 바뀜
+  ```jsx
+  <label htmlFor='idHere'></label>
+  <input id='idHere' className='classNameHere' type='text' />
+  // 어디까지나 JSX이므로 for나 class는 예약어로 사용됨
+  // for는 htmlFor, class는 className으로 대체해서 사용해야 함
+  ```
 
 ## [React State](https://github.com/solarsdev/react-movie-app/tree/master/react-state)
 
@@ -260,4 +278,186 @@
     ```
     <aside>
       💡 React 본연의 기능을 활용하면서 이제 좀 코드가 가벼워진 느낌
+    </aside>
+
+### React에서 State를 설정하는 2가지 방법
+
+```jsx
+const [counter, setCounter] = React.useState(0);
+// counter: value
+// setCounter: modifier
+setCounter(counter + 1);
+```
+
+- counter라는 변수를 state로 지정하여 관리하는 방법으로는 상기 코드가 있을수 있는데, 이 방식을 사용하게 되면 **counter의 값이 원하는대로 나오지 않을 가능성**이 있음
+  - 어떤 경우에 원하는대로 값이 나오지 않을까?
+    [【React】そろそろ技術ブログで setCount(count + 1) と書くのはやめませんか](https://zenn.dev/stin/articles/use-appropriate-api)
+  - 결론부터 이야기하면 같은 컴포넌트 내에서 setCounter에서 변수를 직접 호출하면 동일한 counter값을 가져온다는 것임
+    ```jsx
+    const [counter, setCounter] = React.useState(0);
+    // counter: value
+    // setCounter: modifier
+    setCounter(counter + 1);
+    setCounter(counter + 1);
+    ```
+  - 상기 코드에서는 setCounter를 2번 사용한다고 해서 값이 2씩 증가하는것이 아니라 실제로는 1씩 증가하게 된다. 즉, counter는 read-only형태로서 실질적으로 counter값을 이용하기 위해서는 다른 방식을 이용한다.
+    ```jsx
+    // new way to modify counter
+    setCounter((prevValue) => prevValue + 1);
+    // 결론은 counter와 같은 state값이 접근할때는,
+    // modifier의 parameter를 이용해야 한다는 것을 명심하자
+    ```
+- state를 설정하는 2가지 방법
+  1. modifier를 통해 상수값을 직접 설정하는 방법
+  2. 직전 state값을 이용해서 증감을 하는 방법
+
+### React에서 Input 관리 (State를 이용)
+
+- React에서 State를 이용하면 Input에서 입력받은 데이터를 컴포넌트 내부의 값으로 가지고 갈 수 있음
+- 컴포넌트에서 State를 선언한 뒤, Input의 onChange와 같은 이벤트를 이용해서 value를 가지고 오자
+- 샘플 어플리케이션을 작성
+
+  - 시간, 분을 입력받고 시간이 입력됐다면 분을, 분이 입력됐다면 시간을 자동으로 변환하여 출력해주는 어플리케이션 (Super Converter)
+
+    ```jsx
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>React State</title>
+      </head>
+      <body>
+        <div id="root"></div>
+      </body>
+      <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+      <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+      <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+      <script type="text/babel">
+        const MinutesToHours = () => {
+          const [minutes, setMinutes] = React.useState(0);
+          const [hours, setHours] = React.useState(0);
+          const [flipped, setFlipped] = React.useState(false);
+          const onMinutesChange = (event) => {
+            const numMinutes = event.target.value;
+
+            setMinutes(numMinutes);
+            setHours(Math.round(numMinutes / 60));
+          };
+          const onHoursChange = (event) => {
+            const numHours = event.target.value;
+
+            setMinutes(numHours * 60);
+            setHours(numHours);
+          };
+          const onFlip = () => {
+            setFlipped((prevFlipped) => !prevFlipped);
+          };
+          const reset = () => {
+            setMinutes(0);
+            setHours(0);
+          };
+          return (
+            <div>
+              <h2>Minutes to Hours</h2>
+              <label htmlFor='minutes'>Minutes</label>
+              <input
+                id='minutes'
+                type='number'
+                placeholder='Minutes'
+                onChange={onMinutesChange}
+                value={minutes}
+                disabled={!flipped}
+              />
+              <label for='hours'>Hours</label>
+              <input
+                id='hours'
+                type='number'
+                placeholder='Hours'
+                onChange={onHoursChange}
+                value={hours}
+                disabled={flipped}
+              />
+              <button onClick={reset}>Reset</button>
+              <button onClick={onFlip}>Flip</button>
+            </div>
+          );
+        };
+        const KilometersToMiles = () => {
+          const [kilometer, setKilometer] = React.useState(0);
+          const [mile, setMile] = React.useState(0);
+          const [flipped, setFlipped] = React.useState(false);
+          const onKilometerChange = (event) => {
+            const numKilometer = event.target.value;
+
+            setKilometer(numKilometer);
+            setMile(numKilometer * 0.6214);
+          };
+          const onMileChange = (event) => {
+            const numMile = event.target.value;
+
+            setKilometer(numMile / 0.6214);
+            setMile(numMile);
+          };
+          const onFlip = () => {
+            setFlipped((prevFlipped) => !prevFlipped);
+          };
+          const reset = () => {
+            setKilometer(0);
+            setMile(0);
+          };
+          return (
+            <div>
+              <h2>Kilometers To Miles</h2>
+              <label htmlFor='kilometer'>Kilometer</label>
+              <input
+                id='kilometer'
+                type='number'
+                placeholder='Kilometers'
+                onChange={onKilometerChange}
+                value={kilometer}
+                disabled={!flipped}
+              />
+              <label for='mile'>Miles</label>
+              <input
+                id='mile'
+                type='number'
+                placeholder='Miles'
+                onChange={onMileChange}
+                value={mile}
+                disabled={flipped}
+              />
+              <button onClick={reset}>Reset</button>
+              <button onClick={onFlip}>Flip</button>
+            </div>
+          );
+        };
+        const App = () => {
+          const [menuIndex, setMenuIndex] = React.useState('0');
+          const onSelectChange = (event) => {
+            setMenuIndex(event.target.value);
+          };
+          return (
+            <div>
+              <h1>Super Converter</h1>
+              <select onChange={onSelectChange}>
+                <option value='0'>Select converter...</option>
+                <option value='1'>Minutes to Hours</option>
+                <option value='2'>Kilometers to Miles</option>
+              </select>
+              {menuIndex === '0' ? <h2>Please select converter you want</h2> : null}
+              {menuIndex === '1' ? <MinutesToHours /> : null}
+              {menuIndex === '2' ? <KilometersToMiles /> : null}
+            </div>
+          );
+        };
+        const Root = document.getElementById('root');
+        ReactDOM.render(<App />, Root);
+      </script>
+    </html>
+    ```
+
+    <aside>
+      💡 React에서의 State관리와 더불어 사용자의 입력을 State로 관리하는 방법을 익히고, JSX를 이용해서 컴포넌트를 조건에 따라서 출력해보는 예제를 만들어봄
     </aside>

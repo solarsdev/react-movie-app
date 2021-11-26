@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React State</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const MinutesToHours = () => {
+      const [minutes, setMinutes] = React.useState(0);
+      const [hours, setHours] = React.useState(0);
+      const [flipped, setFlipped] = React.useState(false);
+      const onMinutesChange = (event) => {
+        const numMinutes = event.target.value;
+
+        setMinutes(numMinutes);
+        setHours(Math.round(numMinutes / 60));
+      };
+      const onHoursChange = (event) => {
+        const numHours = event.target.value;
+
+        setMinutes(numHours * 60);
+        setHours(numHours);
+      };
+      const onFlip = () => {
+        setFlipped((prevFlipped) => !prevFlipped);
+      };
+      const reset = () => {
+        setMinutes(0);
+        setHours(0);
+      };
+      return (
+        <div>
+          <h2>Minutes to Hours</h2>
+          <label htmlFor='minutes'>Minutes</label>
+          <input
+            id='minutes'
+            type='number'
+            placeholder='Minutes'
+            onChange={onMinutesChange}
+            value={minutes}
+            disabled={!flipped}
+          />
+          <label for='hours'>Hours</label>
+          <input
+            id='hours'
+            type='number'
+            placeholder='Hours'
+            onChange={onHoursChange}
+            value={hours}
+            disabled={flipped}
+          />
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>Flip</button>
+        </div>
+      );
+    };
+    const KilometersToMiles = () => {
+      const [kilometer, setKilometer] = React.useState(0);
+      const [mile, setMile] = React.useState(0);
+      const [flipped, setFlipped] = React.useState(false);
+      const onKilometerChange = (event) => {
+        const numKilometer = event.target.value;
+
+        setKilometer(numKilometer);
+        setMile(numKilometer * 0.6214);
+      };
+      const onMileChange = (event) => {
+        const numMile = event.target.value;
+
+        setKilometer(numMile / 0.6214);
+        setMile(numMile);
+      };
+      const onFlip = () => {
+        setFlipped((prevFlipped) => !prevFlipped);
+      };
+      const reset = () => {
+        setKilometer(0);
+        setMile(0);
+      };
+      return (
+        <div>
+          <h2>Kilometers To Miles</h2>
+          <label htmlFor='kilometer'>Kilometer</label>
+          <input
+            id='kilometer'
+            type='number'
+            placeholder='Kilometers'
+            onChange={onKilometerChange}
+            value={kilometer}
+            disabled={!flipped}
+          />
+          <label for='mile'>Miles</label>
+          <input
+            id='mile'
+            type='number'
+            placeholder='Miles'
+            onChange={onMileChange}
+            value={mile}
+            disabled={flipped}
+          />
+          <button onClick={reset}>Reset</button>
+          <button onClick={onFlip}>Flip</button>
+        </div>
+      );
+    };
+    const App = () => {
+      const [menuIndex, setMenuIndex] = React.useState('0');
+      const onSelectChange = (event) => {
+        setMenuIndex(event.target.value);
+      };
+      return (
+        <div>
+          <h1>Super Converter</h1>
+          <select onChange={onSelectChange}>
+            <option value='0'>Select converter...</option>
+            <option value='1'>Minutes to Hours</option>
+            <option value='2'>Kilometers to Miles</option>
+          </select>
+          {menuIndex === '0' ? <h2>Please select converter you want</h2> : null}
+          {menuIndex === '1' ? <MinutesToHours /> : null}
+          {menuIndex === '2' ? <KilometersToMiles /> : null}
+        </div>
+      );
+    };
+    const Root = document.getElementById('root');
+    ReactDOM.render(<App />, Root);
+  </script>
+</html>
