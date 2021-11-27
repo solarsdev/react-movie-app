@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Props - Memo</title>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+  <script src="https://unpkg.com/react@17.0.2/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script type="text/babel">
+    const Btn = ({ text, onClickSaveChanges }) => {
+      console.log(`${text} rendered!`);
+      return (
+        <button
+          onClick={onClickSaveChanges}
+          style={{
+            backgroundColor: 'tomato',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '4px',
+            border: 0,
+            margin: '10px',
+          }}>
+          {text}
+        </button>
+      );
+    };
+    const MemoizedBtn = React.memo(Btn);
+    const App = () => {
+      const [value, setValue] = React.useState('Save Changes');
+      const onClickSaveChanges = () => setValue('Revert Changes');
+      return (
+        <div>
+          <MemoizedBtn text={value} onClickSaveChanges={onClickSaveChanges} />
+          <MemoizedBtn text='Confirm' />
+        </div>
+      );
+    };
+    const Root = document.getElementById('root');
+    ReactDOM.render(<App />, Root);
+  </script>
+</html>
