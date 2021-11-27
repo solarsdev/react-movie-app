@@ -2,9 +2,16 @@
 
 ### 목차
 
-1. [Introduction](#Introduction)
-2. [React Basics](#React-Basics)
-3. [React State](#React-State)
+1. [Introduction](#introduction)
+   a. [Why React?](#why-react)
+2. [React Basics](#react-basics)
+   a. [React를 사용하는것에서 오는 편리함](#react를-사용하는것에서-오는-편리함)
+   b. [JSX란?](#jsx란)
+   c. [JSX로 코딩할때 주의점](#jsx로-코딩할때-주의점)
+3. [React State](#react-state)
+   a. [State의 구현](#state의-구현)
+   b. [React에서 State를 설정하는 2가지 방법](#react에서-state를-설정하는-2가지-방법)
+   c. [React에서 Input 관리 (State를 이용)](#react에서-input-관리-state를-이용)
 
 ## Introduction
 
@@ -311,7 +318,7 @@ setCounter(counter + 1);
   1. modifier를 통해 상수값을 직접 설정하는 방법
   2. 직전 state값을 이용해서 증감을 하는 방법
 
-### React에서 Input 관리 (State를 이용)
+### [React에서 Input 관리 (State를 이용)](https://github.com/solarsdev/react-movie-app/tree/master/react-input)
 
 - React에서 State를 이용하면 Input에서 입력받은 데이터를 컴포넌트 내부의 값으로 가지고 갈 수 있음
 - 컴포넌트에서 State를 선언한 뒤, Input의 onChange와 같은 이벤트를 이용해서 value를 가지고 오자
