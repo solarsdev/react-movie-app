@@ -2,15 +2,15 @@
 
 ### 목차
 
-1. [Introduction](#introduction)
+1. [Introduction](#introduction)  
    a. [Why React?](#why-react)
-2. [React Basics](#react-basics)
-   a. [React를 사용하는것에서 오는 편리함](#react를-사용하는것에서-오는-편리함)
-   b. [JSX란?](#jsx란)
+2. [React Basics](#react-basics)  
+   a. [React를 사용하는것에서 오는 편리함](#react를-사용하는것에서-오는-편리함)  
+   b. [JSX란?](#jsx란)  
    c. [JSX로 코딩할때 주의점](#jsx로-코딩할때-주의점)
-3. [React State](#react-state)
-   a. [State의 구현](#state의-구현)
-   b. [React에서 State를 설정하는 2가지 방법](#react에서-state를-설정하는-2가지-방법)
+3. [React State](#react-state)  
+   a. [State의 구현](#state의-구현)  
+   b. [React에서 State를 설정하는 2가지 방법](#react에서-state를-설정하는-2가지-방법)  
    c. [React에서 Input 관리 (State를 이용)](#react에서-input-관리-state를-이용)
 
 ## Introduction
