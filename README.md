@@ -15,8 +15,8 @@
 4. [React Props](#react-props)  
    a. [React Memo](#react-memo)  
    b. [React PropTypes](#react-proptypes)
-5. [Create React App](#create-react-app)
-   a. [Introduction](#introduction)
+5. [Create React App](#create-react-app)  
+   a. [Introduction](#introduction-1)  
    b. [Tour of Create React App](#tour-of-create-react-app)
 
 ## Introduction
