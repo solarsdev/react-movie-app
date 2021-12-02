@@ -18,7 +18,9 @@
 5. [Create React App](#create-react-app)  
    a. [Introduction](#introduction-1)  
    b. [Tour of Create React App](#tour-of-create-react-app)
-6. [React Effects](#react-effects)
+6. [React Effects](#react-effects)  
+   a. [Cleanup Function](#cleanup-function)
+7. [React Router](#react-router)
 
 ## Introduction
 
@@ -704,3 +706,186 @@ const App = () => {
 
   export default App;
   ```
+
+### Cleanup Function
+
+- 컴포넌트가 destroy상태가 될때 실행하는 함수가 있음
+- useEffect()의 dependency를 지정하지 않았을때 컴포넌트의 렌더링 실행시 한번만 적용되는 함수를 만들수 있었지만, 이번에는 그 반대로 제거될때 실행되는 함수를 만들수 있다는 이야기
+- 샘플 코드
+  ```jsx
+  // useEffect()가 함수를 리턴할때는 컴포넌트가 제거되었을 때 실행됨
+  useEffect(() => {
+    console.log('created :)');
+    return () => console.log('destroyed :(');
+  }, []);
+  ```
+  ```jsx
+  // 이해가 쉽도록 함수를 divide 해보자
+  const destroyFn = () => {
+    console.log('destroyed!');
+  };
+  const createFn = () => {
+    console.log('created!');
+    return destroyFn;
+  };
+  useEffect(createdFn, []);
+  ```
+
+## React Router
+
+[React Router](https://reactrouter.com/docs/en/v6/getting-started/overview)
+
+- React Router는 React에서 사용할수 있는 페이지 전환 라이브러리로서 새로고침 없이 페이지를 이동할 수 있는 심플한 기능을 제공함
+- 각각의 페이지의 URL을 정의하는것을 라우팅이라고 하는데, 각 URL과 컴포넌트들을 매칭해서 연결해주고, 각 컴포넌트들 안에서 URL 이동을 A태그가 아닌 Link라는 고유기능을 이용해서 제공함
+- Link를 사용하게 되면 페이지를 이동하는것이 아닌, 해당하는 컴포넌트들을 화면에 새로 렌더링 해주는 개념으로 웹의 UI를 보다 App에 가깝게 실현가능하도록 도와줌
+
+```bash
+npm install react-router-dom #최신버전은 6인데, 5와는 문법이 많이 다르다
+```
+
+```jsx
+import { render } from 'react-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+// import your route components too
+
+render(
+  <BrowserRouter>
+    <Routes>
+      <Route path='/' element={<App />}>
+        <Route index element={<Home />} />
+        <Route path='teams' element={<Teams />}>
+          <Route path=':teamId' element={<Team />} />
+          <Route path='new' element={<NewTeamForm />} />
+          <Route index element={<LeagueStandings />} />
+        </Route>
+      </Route>
+    </Routes>
+  </BrowserRouter>,
+  document.getElementById('root'),
+);
+
+// 상기 코드의 경로구성
+//   /teams/:teamId
+//   /teams/new
+//   /teams
+//   /
+// 중첩된 URL을 포함하여 매우 직관적인 설계로 되어 있음
+```
+
+```jsx
+import { Link } from 'react-router-dom';
+
+function Home() {
+  return (
+    <div>
+      <h1>Home</h1>
+      <nav>
+        <Link to='/'>Home</Link> | <Link to='about'>About</Link>
+      </nav>
+    </div>
+  );
+}
+
+// 페이지 이동또한 Link to로 매우 심플하고 직관적임
+```
+
+```jsx
+import { Routes, Route, useParams } from 'react-router-dom';
+
+function App() {
+  return (
+    <Routes>
+      <Route path='invoices/:invoiceId' element={<Invoice />} />
+    </Routes>
+  );
+}
+
+function Invoice() {
+  let params = useParams();
+  return <h1>Invoice {params.invoiceId}</h1>;
+}
+
+// URL 매개변수는 :Id를 통해서 원하는 변수로 받아온 뒤에 이용하게 됨
+```
+
+## 연습용 프로젝트1: To Do List
+
+- 간단하게 텍스트형 input을 받아서 리스트로 출력해주는 어플리케이션
+
+  ```jsx
+  import { useState } from 'react';
+
+  function App() {
+    const [toDo, setToDo] = useState('');
+    const [toDos, setToDos] = useState([]);
+
+    const onSubmit = (event) => {
+      event.preventDefault();
+      setToDos((prevToDos) => [toDo, ...prevToDos]);
+      setToDo('');
+    };
+    const onChange = (event) => setToDo(event.target.value);
+
+    return (
+      <div>
+        <h1>To Do List ({toDos.length})</h1>
+        <form onSubmit={onSubmit}>
+          <input type='text' value={toDo} onChange={onChange} />
+          <button>Add ToDo</button>
+        </form>
+        <ul>
+          {toDos.map((toDos, index) => (
+            <li key={index}>{toDos}</li>
+          ))}
+        </ul>
+      </div>
+    );
+  }
+
+  export default App;
+  ```
+
+## 연습용 프로젝트2: Coin Tracker
+
+- 암호화폐들의 가격을 출력하는 어플리케이션
+
+  - 페이지에 첫 진입하면 로딩 메시지가 보이고, 로딩이 완료되면 가격 리스트를 표시
+  - 옵션1: BTC로 변환
+  - 옵션2: SELECT로 변환
+
+    ```jsx
+    import { useEffect, useState } from 'react';
+
+    function App() {
+      const [loading, setLoading] = useState(true);
+      const [coins, setCoins] = useState([]);
+
+      useEffect(() => {
+        fetch('https://api.coinpaprika.com/v1/tickers')
+          .then((response) => response.json())
+          .then((coins) => {
+            setCoins(coins);
+            setLoading(false);
+          });
+      }, []);
+
+      return (
+        <div>
+          <h1>The Coins{loading ? null : ` (${coins.length})`}</h1>
+          {loading ? (
+            <strong>Loading...</strong>
+          ) : (
+            <ul>
+              {coins.map((coin) => (
+                <li key={coin.rank}>
+                  {coin.name} ({coin.symbol}) - ${coin.quotes.USD.price}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      );
+    }
+
+    export default App;
+    ```
